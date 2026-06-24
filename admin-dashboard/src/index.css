@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1a1d2e; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+.input-field {
+  @apply w-full bg-[#0f1119] border border-gray-800 rounded-lg px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-red-600/50 focus:border-red-600 transition-colors;
+}
+
+.btn-primary {
+  @apply bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-50;
+}
+
+.btn-secondary {
+  @apply bg-[#1a1d2e] hover:bg-gray-800 text-gray-300 font-medium px-4 py-2 rounded-lg text-sm border border-gray-800 transition-all;
+}

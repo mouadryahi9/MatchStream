@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { @apply m-0 p-0 box-border; }
+  html { @apply scroll-smooth; }
+  body {
+    @apply font-sans antialiased;
+    background: #0f1119;
+    color: #e0e0e0;
+    font-size: 15px;
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  .btn-primary { @apply bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed; }
+  .btn-secondary { @apply bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 px-5 rounded-xl transition-all duration-200; }
+  .input-field { @apply w-full bg-[#1a1d2e] border border-gray-700 rounded-xl px-4 py-3 text-gray-200 placeholder-gray-500 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600/30 transition-all; }
+
+  .card-dark {
+    @apply bg-[#1a1d2e] rounded-xl border border-gray-800 overflow-hidden;
+  }
+
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold; }
+  .badge-live { @apply bg-red-600 text-white; }
+  .badge-scheduled { @apply bg-gray-700 text-gray-400; }
+  .badge-finished { @apply bg-gray-700 text-gray-500; }
+
+  .tab-btn { @apply px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200; }
+  .tab-btn-active { @apply bg-red-600 text-white; }
+  .tab-btn-inactive { @apply bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white; }
+
+  .match-row {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl transition-colors cursor-pointer;
+  }
+  .match-row:hover { @apply bg-gray-800/50; }
+}
