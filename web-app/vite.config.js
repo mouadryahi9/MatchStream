@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => ({
       "/api": { target: "http://localhost:4000", changeOrigin: true },
       "/ws": { target: "ws://localhost:4000", ws: true },
       "/streams": { target: "http://localhost:4000", changeOrigin: true },
+      "/hls_cache": { target: "http://localhost:4000", changeOrigin: true },
     },
   },
   build: {

@@ -81,7 +81,7 @@ export const koooraService = {
     cron.schedule("*/30 * * * * *", async () => {
       await this.scrapeAll();
     });
-    cron.schedule("*/5 * * * *", async () => {
+    cron.schedule("*/2 * * * *", async () => {
       await this.cleanupOldMatches();
     });
     logger.info("kooora", "Kooora scraper started (every 30s)");
@@ -93,8 +93,7 @@ export const koooraService = {
       const result = await query(
         `DELETE FROM matches
          WHERE status = 'finished'
-           AND updated_at < NOW() - INTERVAL '2 hours'
-           AND start_time < NOW() - INTERVAL '2 hours'`
+           AND updated_at < NOW() - INTERVAL '5 minutes'`
       );
       if (result.rowCount > 0) {
         logger.info("kooora", `Cleaned up ${result.rowCount} finished matches`);
@@ -109,35 +108,46 @@ export const koooraService = {
     this._isRunning = true;
     this._lastRun = new Date();
     try {
-      const [footballHtml, homeHtml] = await Promise.all([
-        new Promise((resolve) => {
-          try { resolve(fetchPage(`${KOOORA_BASE}${FOOTBALL_MATCHES}`)); }
-          catch { resolve(null); }
-        }),
-        new Promise((resolve) => {
-          try { resolve(fetchPage(KOOORA_BASE)); }
-          catch { resolve(null); }
-        }),
-      ]);
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const fmt = (d) => d.toISOString().split("T")[0];
+      const dateUrls = [
+        `${KOOORA_BASE}${FOOTBALL_MATCHES}`,
+        `${KOOORA_BASE}/ar/${fmt(today)}`,
+        `${KOOORA_BASE}/ar/football/matches?date=${fmt(tomorrow)}`,
+      ];
+
+      const pages = await Promise.all(
+        dateUrls.map((url) =>
+          new Promise((resolve) => {
+            try { resolve(fetchPage(url)); }
+            catch { resolve(null); }
+          })
+        )
+      );
+      const [footballHtml, todayHtml, tomorrowHtml] = pages;
+      const homeHtml = await new Promise((resolve) => {
+        try { resolve(fetchPage(KOOORA_BASE)); }
+        catch { resolve(null); }
+      });
 
       let allMatches = [];
 
-      if (footballHtml) {
+      for (const html of [footballHtml, todayHtml, tomorrowHtml, homeHtml]) {
+        if (!html) continue;
         try {
-          const jsonData = extractNextData(footballHtml);
-          allMatches = extractMatchesFromFootballPage(jsonData);
-        } catch (err) {
-          logger.error("kooora", "Failed to parse football page", { error: err.message });
-        }
-      }
-
-      if (homeHtml && allMatches.length === 0) {
-        try {
-          const jsonData = extractNextData(homeHtml);
-          allMatches = extractMatchesFromHomepage(jsonData);
-        } catch (err) {
-          logger.error("kooora", "Failed to parse homepage", { error: err.message });
-        }
+          const jsonData = extractNextData(html);
+          const matches = extractMatchesFromFootballPage(jsonData);
+          if (matches.length > 0) {
+            allMatches = allMatches.concat(matches);
+          } else {
+            const homeMatches = extractMatchesFromHomepage(jsonData);
+            if (homeMatches.length > 0) {
+              allMatches = allMatches.concat(homeMatches);
+            }
+          }
+        } catch {}
       }
 
       const seen = new Set();

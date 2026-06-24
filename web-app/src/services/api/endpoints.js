@@ -37,8 +37,6 @@ export const koooraApi = {
 export const adminApi = {
   stats: () => api.get("/admin/stats").then((r) => r.data),
   streams: () => api.get("/admin/streams").then((r) => r.data),
-  scrape: () => api.post("/admin/scrape").then((r) => r.data),
-  scrapeStatus: () => api.get("/admin/scrape/status").then((r) => r.data),
   cache: () => api.get("/admin/cache").then((r) => r.data),
   flushCache: () => api.post("/admin/cache/flush").then((r) => r.data),
   logs: (params) => api.get("/admin/logs", { params }).then((r) => r.data),

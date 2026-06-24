@@ -26,24 +26,26 @@ export default function VideoPlayer({ streamUrl, streamType = "hls", fallbackUrl
 
   const initMpegts = useCallback(async (url) => {
     if (!videoRef.current) return;
+    destroyPlayer();
+    setError(null);
     try {
       const mpegts = (await import("mpegts.js")).default;
-      if (!mpegts.isSupported()) return;
-
-      destroyPlayer();
-      const player = mpegts.createPlayer({
-        type: "mse",
-        url,
-        isLive: true,
-      });
-      mpegtsRef.current = player;
-      player.attachMediaElement(videoRef.current);
-      player.load();
-      if (autoPlay) videoRef.current?.play().catch(() => {});
-      setError(null);
-    } catch {
-      setUseFallback(true);
-    }
+      if (mpegts.isSupported()) {
+        const player = mpegts.createPlayer({
+          type: "mse",
+          url,
+          isLive: true,
+          lazyLoad: false,
+        });
+        mpegtsRef.current = player;
+        player.attachMediaElement(videoRef.current);
+        player.load();
+        if (autoPlay) videoRef.current?.play().catch(() => {});
+        return;
+      }
+    } catch {}
+    videoRef.current.src = url;
+    if (autoPlay) videoRef.current.play().catch(() => {});
   }, [autoPlay, destroyPlayer]);
 
   const initHls = useCallback(async (url) => {
@@ -108,7 +110,9 @@ export default function VideoPlayer({ streamUrl, streamType = "hls", fallbackUrl
   useEffect(() => {
     if (!streamUrl) return;
 
-    if (streamType === "hls" && !useFallback) {
+    if (streamType === "mpegts") {
+      initMpegts(streamUrl);
+    } else if (streamType === "hls" && !useFallback) {
       initHls(streamUrl);
     } else {
       setUseFallback(true);
@@ -118,7 +122,7 @@ export default function VideoPlayer({ streamUrl, streamType = "hls", fallbackUrl
       destroyPlayer();
       clearTimeout(reconnectTimer.current);
     };
-  }, [streamUrl, streamType, useFallback, initHls, destroyPlayer]);
+  }, [streamUrl, streamType, useFallback, initHls, initMpegts, destroyPlayer]);
 
   useEffect(() => {
     if (useFallback && fallbackUrl) {

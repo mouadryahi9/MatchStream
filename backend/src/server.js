@@ -12,7 +12,7 @@ import { execSync } from "child_process";
 import { config } from "./config/index.js";
 import { getRedis } from "./config/redis.js";
 import { getPool } from "./config/database.js";
-import { streamQueue, scrapeQueue } from "./config/queue.js";
+import { streamQueue } from "./config/queue.js";
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { logger } from "./utils/logger.js";
 
@@ -72,6 +72,16 @@ app.get("/api/team-logo/:id", async (req, res) => {
   }
 });
 
+const __iptvdir = path.resolve("hls_cache");
+app.use("/hls_cache", express.static(__iptvdir, {
+  dotfiles: "deny",
+  index: false,
+  setHeaders: (res, p) => {
+    if (p.endsWith(".m3u8")) res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+    else if (p.endsWith(".ts")) res.setHeader("Content-Type", "video/mp2t");
+  },
+}));
+
 app.use("/streams", express.static(config.streams.dir, {
   dotfiles: "deny",
   index: false,
@@ -129,10 +139,9 @@ async function start() {
     getRedis();
     logger.info("server", "Database and Redis connected");
 
-    const { scraperService } = await import("./services/scraperService.js");
-    await scraperService.startCron();
     const { koooraService } = await import("./services/koooraScraper.js");
     await koooraService.startCron();
+
 
     server.listen(config.port, () => {
       logger.info("server", `MatchStream API running on port ${config.port}`, {

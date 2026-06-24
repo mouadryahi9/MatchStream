@@ -1,13 +1,28 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useMatch } from "../hooks/useMatches";
 import { useStream } from "../hooks/useStreams";
 import VideoPlayer from "../components/VideoPlayer";
+import api from "../services/api/client";
 import { FiArrowLeft, FiAlertCircle, FiTv } from "react-icons/fi";
 
 export default function WatchPage() {
   const { id } = useParams();
   const { data: match, isLoading: matchLoading } = useMatch(id);
   const { data: stream, isLoading: streamLoading } = useStream(id);
+  const [hlsUrl, setHlsUrl] = useState(null);
+  const [hlsLoading, setHlsLoading] = useState(false);
+  const [hlsError, setHlsError] = useState(null);
+
+  useEffect(() => {
+    if (match?.stream_url?.includes("ugeen.live")) {
+      setHlsLoading(true);
+      setHlsError(null);
+      api.get("/iptv/hls", { params: { url: match.stream_url } })
+        .then((r) => { setHlsUrl(r.data.hlsUrl); setHlsLoading(false); })
+        .catch((e) => { setHlsError(e.message); setHlsLoading(false); });
+    }
+  }, [match?.stream_url]);
 
   if (matchLoading) {
     return (
@@ -35,7 +50,20 @@ export default function WatchPage() {
         <FiArrowLeft size={14} /> Back to Match
       </Link>
 
-      {stream?.hls_url ? (
+      {hlsLoading ? (
+        <div className="block-card p-12 text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-brand-red mx-auto mb-4" />
+          <p className="text-gray-600 dark:text-dark-300 font-semibold">Starting stream...</p>
+        </div>
+      ) : hlsUrl ? (
+        <div className="block-card">
+          <VideoPlayer
+            streamUrl={hlsUrl.startsWith("http") ? hlsUrl : `${window.location.origin}${hlsUrl}`}
+            streamType="hls"
+            fallbackUrl={match.stream_url}
+          />
+        </div>
+      ) : stream?.hls_url ? (
         <div className="block-card">
           <VideoPlayer
             streamUrl={stream.hls_url.startsWith("http") ? stream.hls_url : `${window.location.origin}${stream.hls_url}`}
@@ -49,7 +77,7 @@ export default function WatchPage() {
             streamUrl={match.stream_url.startsWith("http")
               ? `/api/iptv/stream?url=${encodeURIComponent(match.stream_url)}`
               : match.stream_url}
-            streamType="hls"
+            streamType="mpegts"
             fallbackUrl={match.stream_url}
           />
         </div>

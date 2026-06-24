@@ -5,7 +5,6 @@ import { asyncHandler } from "../utils/helpers.js";
 import { query } from "../config/database.js";
 import { getRedis } from "../config/redis.js";
 import { streamService } from "../services/streamService.js";
-import { scraperService } from "../services/scraperService.js";
 import { ffmpegManager } from "../streams-engine/ffmpegManager.js";
 import { logger } from "../utils/logger.js";
 
@@ -61,21 +60,6 @@ router.post(
   asyncHandler(async (req, res) => {
     await streamService.restart(req.params.id);
     res.json({ message: "Stream restart initiated" });
-  })
-);
-
-router.post(
-  "/scrape",
-  asyncHandler(async (req, res) => {
-    const result = await scraperService.manualScrape();
-    res.json(result);
-  })
-);
-
-router.get(
-  "/scrape/status",
-  asyncHandler(async (req, res) => {
-    res.json(scraperService.getStatus());
   })
 );
 

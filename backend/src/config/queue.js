@@ -22,20 +22,6 @@ export const streamQueue = new Queue("stream-processing", {
   },
 });
 
-export const scrapeQueue = new Queue("scrape-matches", {
-  connection,
-  defaultJobOptions: {
-    attempts: 2,
-    backoff: {
-      type: "fixed",
-      delay: 10000,
-    },
-    removeOnComplete: true,
-    removeOnFail: false,
-  },
-});
-
 export async function closeQueues() {
   await streamQueue.close();
-  await scrapeQueue.close();
 }
