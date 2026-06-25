@@ -1,0 +1,41 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="1" tvg-name="Sport 1 HD" group-title="Sport",Sport 1 HD
+http://ugeen.live:8080/sport1.m3u8
+#EXTINF:-1 tvg-id="2" tvg-name="Sport 2 HD" group-title="Sport",Sport 2 HD
+http://ugeen.live:8080/sport2.m3u8
+#EXTINF:-1 tvg-id="3" tvg-name="Sport 3 HD" group-title="Sport",Sport 3 HD
+http://ugeen.live:8080/sport3.m3u8
+#EXTINF:-1 tvg-id="4" tvg-name="AR: Al Jazeera" group-title="Arabi",AR: Al Jazeera
+http://ugeen.live:8080/ar1.m3u8
+#EXTINF:-1 tvg-id="5" tvg-name="AR: MBC 1" group-title="Arabi",AR: MBC 1
+http://ugeen.live:8080/ar2.m3u8
+#EXTINF:-1 tvg-id="6" tvg-name="AR: Rotana" group-title="Arabi",AR: Rotana
+http://ugeen.live:8080/ar3.m3u8
+#EXTINF:-1 tvg-id="7" tvg-name="MA: 2M" group-title="Maghribi",MA: 2M
+http://ugeen.live:8080/ma1.m3u8
+#EXTINF:-1 tvg-id="8" tvg-name="MA: Al Oula" group-title="Maghribi",MA: Al Oula
+http://ugeen.live:8080/ma2.m3u8
+#EXTINF:-1 tvg-id="9" tvg-name="MA: Medi 1 TV" group-title="Maghribi",MA: Medi 1 TV
+http://ugeen.live:8080/ma3.m3u8
+#EXTINF:-1 tvg-id="10" tvg-name="FR: TF1" group-title="Français",FR: TF1
+http://ugeen.live:8080/fr1.m3u8
+#EXTINF:-1 tvg-id="11" tvg-name="FR: France 2" group-title="Français",FR: France 2
+http://ugeen.live:8080/fr2.m3u8
+#EXTINF:-1 tvg-id="12" tvg-name="FR: Canal+" group-title="Français",FR: Canal+
+http://ugeen.live:8080/fr3.m3u8
+#EXTINF:-1 tvg-id="13" tvg-name="UK: BBC One" group-title="UK",UK: BBC One
+http://ugeen.live:8080/uk1.m3u8
+#EXTINF:-1 tvg-id="14" tvg-name="UK: Sky Sports" group-title="UK",UK: Sky Sports
+http://ugeen.live:8080/uk2.m3u8
+#EXTINF:-1 tvg-id="15" tvg-name="US: CNN" group-title="US",US: CNN
+http://ugeen.live:8080/us1.m3u8
+#EXTINF:-1 tvg-id="16" tvg-name="US: ESPN" group-title="US",US: ESPN
+http://ugeen.live:8080/us2.m3u8
+#EXTINF:-1 tvg-id="17" tvg-name="US: HBO" group-title="US",US: HBO
+http://ugeen.live:8080/us3.m3u8
+#EXTINF:-1 tvg-id="18" tvg-name="Islami: Quran" group-title="Islami",Islami: Quran
+http://ugeen.live:8080/islam1.m3u8
+#EXTINF:-1 tvg-id="19" tvg-name="Islami: Al Sunnah" group-title="Islami",Islami: Al Sunnah
+http://ugeen.live:8080/islam2.m3u8
+#EXTINF:-1 tvg-id="20" tvg-name="DE: Deutsche Welle" group-title="Allemand",DE: Deutsche Welle
+http://ugeen.live:8080/de1.m3u8
