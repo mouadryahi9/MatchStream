@@ -166,12 +166,19 @@ export default function HomePage() {
     "La Liga", "Premier League", "Botola"
   ];
 
+  const LEAGUE_PATTERNS = {
+    "World Cup": ["World Cup", "كأس العالم"],
+    "Champions League": ["Champions League", "دوري أبطال أوروبا"],
+    "Europa League": ["Europa League", "الدوري الأوروبي"],
+    "La Liga": ["La Liga", "الدوري الإسباني", "الليغا"],
+    "Premier League": ["Premier League", "الدوري الإنجليزي"],
+    "Botola": ["Botola", "البطولة الاحترافية", "الدوري المغربي"],
+  };
+
   function matchesLeague(match, pattern) {
     if (!pattern) return true;
-    return ALLOWED_PATTERNS.some((a) =>
-      a.toLowerCase().includes(pattern.toLowerCase()) &&
-      match.league?.toLowerCase().includes(a.toLowerCase())
-    );
+    const patterns = LEAGUE_PATTERNS[pattern] || [pattern];
+    return patterns.some(p => match.league?.toLowerCase().includes(p.toLowerCase()));
   }
 
   const { data: matchesData } = useQuery({
