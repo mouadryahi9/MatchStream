@@ -246,8 +246,7 @@ export default function HomePage() {
   const standings = useStandings(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
   const topScorers = useTopScorers(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
 
-  const liveOnScreen = dateTab === "today" ? allLive.filter((m) => isAllowed(m.league) && matchesLeague(m, selectedLeague)) : [];
-  const hasLive = liveOnScreen.length > 0;
+  const showStandings = selectedLeague && KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")];
 
   const dateTabs = [
     { key: "yesterday", label: "Yesterday" },
@@ -255,34 +254,11 @@ export default function HomePage() {
     { key: "tomorrow", label: "Tomorrow" },
   ];
 
-  const showStandings = selectedLeague && KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")];
-
   return (
     <div className="min-h-screen bg-[#0f1119] text-gray-200">
 
-      {/* Top bar: date nav + live count */}
+      {/* Top bar: date nav */}
       <div className="sticky top-16 z-30 bg-[#0f1119]/95 backdrop-blur-sm border-b border-gray-800/50">
-        {/* Live bar */}
-        {hasLive && dateTab === "today" && (
-          <div className="max-w-6xl mx-auto px-4 py-2">
-            <Link
-              to="#live-matches"
-              className="flex items-center gap-2 text-xs group"
-            >
-              <span className="flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                {liveOnScreen.length} LIVE
-              </span>
-              <span className="text-gray-500 group-hover:text-gray-300 transition-colors truncate">
-                {liveOnScreen[0]?.home_team} vs {liveOnScreen[0]?.away_team}
-              </span>
-              {liveOnScreen.length > 1 && (
-                <span className="text-gray-600">+{liveOnScreen.length - 1} more</span>
-              )}
-            </Link>
-          </div>
-        )}
-
         {/* Date tabs */}
         <div className="max-w-6xl mx-auto px-4 pb-2">
           <div className="flex items-center gap-1 bg-[#1a1d2e] rounded-lg p-0.5 border border-gray-800/50 w-fit">
@@ -336,24 +312,6 @@ export default function HomePage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-4">
-
-        {/* Live matches section */}
-        {liveOnScreen.length > 0 && (
-          <div id="live-matches" className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold uppercase px-2 py-0.5 rounded-full">
-                <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                {liveOnScreen.length} LIVE
-              </span>
-              <span className="text-xs text-gray-500">Now playing</span>
-            </div>
-            <div className="space-y-px">
-              {liveOnScreen.map((m) => (
-                <CompactMatchRow key={m.id} match={m} />
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* All matches grouped by league */}
         {matchesByLeague.length > 0 ? (
