@@ -16,8 +16,6 @@ export default function WatchPage() {
   const [retry, setRetry] = useState(0);
   const MAX_RETRIES = 5;
 
-  const isHlsUrl = (url) => url?.match(/\.m3u8/i) || url?.includes("m3u8");
-
   useEffect(() => {
     let cancelled = false;
     let currentChannelId = null;
@@ -26,12 +24,12 @@ export default function WatchPage() {
       api.get("/iptv/test", { timeout: 30000 })
         .then((r) => { if (!cancelled) { currentChannelId = r.data.streamId; setHlsUrl(r.data.hlsUrl); setHlsLoading(false); } })
         .catch(() => { if (!cancelled) setHlsLoading(false); });
-    } else if (match?.stream_url && isHlsUrl(match.stream_url)) {
+    } else if (match?.stream_url) {
       setHlsLoading(true);
       setHlsUrl(null);
       api.get("/iptv/hls", { params: { url: match.stream_url }, timeout: 30000 })
         .then((r) => { if (!cancelled) { currentChannelId = r.data.streamId; setHlsUrl(r.data.hlsUrl); setHlsLoading(false); } })
-        .catch(() => { if (!cancelled) setHlsLoading(false); });
+        .catch(() => { if (!cancelled) { setHlsLoading(false); } });
     }
     return () => {
       cancelled = true;
