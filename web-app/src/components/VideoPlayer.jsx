@@ -26,7 +26,15 @@ export default function VideoPlayer({ streamUrl, streamType = "hls", fallbackUrl
     try {
       const mpegts = (await import("mpegts.js")).default;
       if (mpegts.isSupported()) {
-        const player = mpegts.createPlayer({ type: "mse", url, isLive: true, lazyLoad: false });
+        const player = mpegts.createPlayer({
+          type: "mse", url, isLive: true, lazyLoad: false,
+          liveBufferLatencyChasing: true,
+          enableWorker: true,
+          liveBufferLatencyMaxLatency: 3,
+          liveBufferLatencyMinRemain: 1,
+          stashInitialSize: 128,
+          preloadTime: 30,
+        });
         mpegtsRef.current = player;
         player.attachMediaElement(videoRef.current);
         player.load();

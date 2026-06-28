@@ -110,7 +110,7 @@ function followRedirect(url, reqHeaders, res, maxRedirects = 5) {
     res.status(proxyRes.statusCode);
     proxyRes.pipe(res);
   });
-  proxyReq.setTimeout(30000, () => { proxyReq.destroy(); if (!res.headersSent) res.status(504).end(); });
+  proxyReq.setTimeout(0, () => { proxyReq.destroy(); if (!res.headersSent) res.status(504).end(); });
   proxyReq.on("error", () => { if (!res.headersSent) res.status(502).end(); });
   proxyReq.end();
 }
