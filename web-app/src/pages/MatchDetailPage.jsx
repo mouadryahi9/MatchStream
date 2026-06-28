@@ -67,71 +67,72 @@ export default function MatchDetailPage() {
         <FiArrowLeft size={14} /> Back to Matches
       </Link>
 
-      <div className="block-card relative">
-        <div className="bg-gradient-to-r from-brand-purple to-purple-800 px-6 sm:px-8 py-6 text-white text-center">
+      <div className="block-card relative overflow-hidden">
+        <div className="relative px-6 sm:px-8 py-8 text-white text-center bg-gradient-to-b from-[#0f0f1a] via-[#1a1a2e] to-[#0f0f1a]">
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 25% 50%, #fff 0%, transparent 50%), radial-gradient(circle at 75% 50%, #fff 0%, transparent 50%)' }} />
           {match.league && (
-            <p className="text-[11px] text-purple-300 uppercase tracking-wider mb-4">{match.league}</p>
+            <p className="text-[11px] text-amber-400/80 uppercase tracking-[0.2em] mb-5 font-medium">{match.league}</p>
           )}
-          <div className="flex items-center justify-center gap-4 sm:gap-10 md:gap-16">
-            <div className="flex-1 flex flex-col items-center gap-2">
+          <div className="flex items-center justify-center gap-4 sm:gap-10 md:gap-16 relative">
+            <div className="flex-1 flex flex-col items-center gap-3">
               <TeamLogo url={meta.teamALogo} name={match.home_team} size="lg" />
-              <span className="font-bold text-base sm:text-xl text-white/90">{match.home_team}</span>
+              <span className="font-bold text-sm sm:text-lg text-white/80 leading-tight max-w-[120px]">{match.home_team}</span>
             </div>
 
             <div className="shrink-0 text-center">
               {isLive || isFinished ? (
                 <div>
                   <div className="text-4xl sm:text-6xl font-extrabold tabular-nums tracking-tighter">
-                    <span className={isLive ? "text-white" : "text-white/80"}>{match.home_score ?? 0}</span>
-                    <span className="text-purple-300 mx-1 sm:mx-2">-</span>
-                    <span className={isLive ? "text-white" : "text-white/80"}>{match.away_score ?? 0}</span>
+                    <span className={isLive ? "text-white" : "text-white/70"}>{match.home_score ?? 0}</span>
+                    <span className="text-amber-400/60 mx-1 sm:mx-2 font-light">-</span>
+                    <span className={isLive ? "text-white" : "text-white/70"}>{match.away_score ?? 0}</span>
                   </div>
                   {isLive && (
-                    <div className="mt-3 flex items-center justify-center gap-1.5 bg-red-600/30 text-red-300 text-xs font-bold px-3 py-1.5 rounded-full border border-red-500/30">
-                      <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
+                    <div className="mt-3 flex items-center justify-center gap-1.5 bg-red-600/20 text-red-400 text-[11px] font-bold px-3 py-1.5 rounded-full border border-red-500/20">
+                      <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
                       LIVE
                     </div>
                   )}
                   {isFinished && (
-                    <div className="mt-2 text-xs font-semibold text-purple-300">Full Time</div>
+                    <div className="mt-2 text-[11px] font-medium text-amber-400/60">Full Time</div>
                   )}
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="text-sm font-semibold text-purple-300 mb-2">VS</div>
+                  <div className="text-xs font-semibold text-amber-400/50 mb-2">VS</div>
                   {match.start_time && (
                     <div className="flex flex-col items-center gap-1">
-                      <span className="text-2xl font-bold text-white">{formatTime(match.start_time)}</span>
-                      <span className="text-[11px] text-purple-300">{formatDate(match.start_time)}</span>
+                      <span className="text-2xl font-bold text-white/90">{formatTime(match.start_time)}</span>
+                      <span className="text-[11px] text-white/40 font-medium">{formatDate(match.start_time)}</span>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            <div className="flex-1 flex flex-col items-center gap-2">
+            <div className="flex-1 flex flex-col items-center gap-3">
               <TeamLogo url={meta.teamBLogo} name={match.away_team} size="lg" />
-              <span className="font-bold text-base sm:text-xl text-white/90">{match.away_team}</span>
+              <span className="font-bold text-sm sm:text-lg text-white/80 leading-tight max-w-[120px]">{match.away_team}</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-6">
+          <div className="flex items-center justify-center gap-4 mt-6 relative">
             {match.start_time && (
-              <span className="flex items-center gap-1.5 text-xs text-purple-300">
-                <FiCalendar size={12} /> {formatDate(match.start_time)}
+              <span className="flex items-center gap-1.5 text-[11px] text-white/40">
+                <FiCalendar size={11} /> {formatDate(match.start_time)}
               </span>
             )}
             {meta.tournamentName && (
-              <span className="flex items-center gap-1.5 text-xs text-purple-300">
-                <FiMapPin size={12} /> {meta.tournamentName}
+              <span className="flex items-center gap-1.5 text-[11px] text-white/40">
+                <FiMapPin size={11} /> {meta.tournamentName}
               </span>
             )}
           </div>
 
           {(isLive || match.status === "scheduled" || match.status === "notstarted") && (
-            <div className="flex justify-center mt-6">
-              <Link to={`/watch/${match.id}`} className="bg-brand-red hover:bg-red-700 text-white font-bold text-base px-8 py-3 rounded-xl inline-flex items-center gap-2 transition-all shadow-lg">
-                <FiPlay size={18} />
+            <div className="flex justify-center mt-6 relative">
+              <Link to={`/watch/${match.id}`} className="bg-brand-red hover:bg-red-700 text-white font-bold text-sm px-8 py-3 rounded-xl inline-flex items-center gap-2 transition-all shadow-lg shadow-red-600/20">
+                <FiPlay size={16} />
                 {isLive ? "Watch Live" : "Watch Match"}
               </Link>
             </div>
