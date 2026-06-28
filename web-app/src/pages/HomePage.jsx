@@ -17,12 +17,18 @@ function formatTime(dateStr) {
   return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
+const ALLOWED_LEAGUES = [
+  "Premier League", "La Liga", "Champions League",
+  "Europa League", "Botola", "World Cup",
+];
+
+function isAllowed(league) {
+  return ALLOWED_LEAGUES.some((a) => league?.toLowerCase().includes(a.toLowerCase()));
+}
+
 const LEAGUE_COLORS = {
   "La Liga": "bg-red-600",
   "Premier League": "bg-purple-600",
-  "Serie A": "bg-blue-600",
-  "Bundesliga": "bg-green-600",
-  "Ligue 1": "bg-cyan-600",
   "Botola": "bg-emerald-600",
   "Champions League": "bg-yellow-600",
   "Europa League": "bg-orange-600",
@@ -157,7 +163,7 @@ export default function HomePage() {
     staleTime: 60000,
   });
 
-  const leagues = leaguesData?.leagues || [];
+  const leagues = (leaguesData?.leagues || []).filter(isAllowed);
 
   const leagueQuery = selectedLeague ? `%${selectedLeague}%` : null;
 
@@ -198,7 +204,7 @@ export default function HomePage() {
 
   const dayMatches = useMemo(() => {
     return allMatches.filter((m) => {
-      if (!m.start_time) return false;
+      if (!m.start_time || !isAllowed(m.league)) return false;
       const md = new Date(m.start_time);
       if (isNaN(md.getTime())) return false;
       return md.toISOString().split("T")[0] === targetDate;
@@ -225,7 +231,7 @@ export default function HomePage() {
   const topScorers = useTopScorers(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
 
   const hasLive = allLive.length > 0;
-  const liveOnScreen = dateTab === "today" ? allLive : [];
+  const liveOnScreen = dateTab === "today" ? allLive.filter((m) => isAllowed(m.league)) : [];
 
   const dateTabs = [
     { key: "yesterday", label: "Yesterday" },

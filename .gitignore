@@ -8,3 +8,6 @@ check*.js
 backend/hls_cache/
 nginx-temp.js
 check-server.js
+dist/
+web-app/dist/
+admin-dashboard/dist/
