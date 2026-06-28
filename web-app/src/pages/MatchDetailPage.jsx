@@ -4,10 +4,10 @@ import api from "../services/api/client";
 import { useState } from "react";
 import { FiArrowLeft, FiPlay, FiClock, FiCalendar, FiMapPin } from "react-icons/fi";
 
-function TeamLogo({ teamId, name, size = "lg" }) {
+function TeamLogo({ url, name, size = "lg" }) {
   const [error, setError] = useState(false);
   const dim = size === "lg" ? "w-20 h-20 sm:w-28 sm:h-28" : "w-10 h-10 sm:w-12 sm:h-12";
-  if (!teamId || error) {
+  if (!url || error) {
     return (
       <div className={`${dim} rounded-full bg-gray-200 dark:bg-dark-800 flex items-center justify-center ring-2 ring-gray-300 dark:ring-dark-700`}>
         <span className="text-2xl font-bold text-gray-400 dark:text-dark-500">{name?.charAt(0)}</span>
@@ -16,7 +16,7 @@ function TeamLogo({ teamId, name, size = "lg" }) {
   }
   return (
     <div className={`${dim} rounded-full bg-gray-200 dark:bg-dark-800 flex items-center justify-center overflow-hidden ring-2 ring-gray-300 dark:ring-dark-700`}>
-      <img src={`/api/team-logo/${teamId}`} alt="" className="w-full h-full object-contain p-1" loading="lazy" onError={() => setError(true)} />
+      <img src={url} alt="" className="w-full h-full object-contain p-1" loading="lazy" onError={() => setError(true)} />
     </div>
   );
 }
@@ -74,7 +74,7 @@ export default function MatchDetailPage() {
           )}
           <div className="flex items-center justify-center gap-4 sm:gap-10 md:gap-16">
             <div className="flex-1 flex flex-col items-center gap-2">
-              <TeamLogo teamId={meta.homeTeamId} name={match.home_team} size="lg" />
+              <TeamLogo url={meta.teamALogo} name={match.home_team} size="lg" />
               <span className="font-bold text-base sm:text-xl text-white/90">{match.home_team}</span>
             </div>
 
@@ -110,7 +110,7 @@ export default function MatchDetailPage() {
             </div>
 
             <div className="flex-1 flex flex-col items-center gap-2">
-              <TeamLogo teamId={meta.awayTeamId} name={match.away_team} size="lg" />
+              <TeamLogo url={meta.teamBLogo} name={match.away_team} size="lg" />
               <span className="font-bold text-base sm:text-xl text-white/90">{match.away_team}</span>
             </div>
           </div>
