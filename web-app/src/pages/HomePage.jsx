@@ -2,8 +2,6 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "../services/api/client";
-import StandingsTable from "../components/StandingsTable";
-import { useStandings } from "../hooks/useKooora";
 
 function getDateStr(offset = 0) {
   const d = new Date();
@@ -150,11 +148,6 @@ function LeagueSection({ league, matches, total }) {
   );
 }
 
-const KNOWN_COMPETITION_IDS = {
-  "world-cup": "70excpe1synn9kadnbppahdn7",
-  "champions-league": null,
-};
-
 export default function HomePage() {
   const [selectedLeague, setSelectedLeague] = useState(null);
   const [dateTab, setDateTab] = useState("today");
@@ -242,10 +235,6 @@ export default function HomePage() {
     return sorted;
   }, [dayMatches]);
 
-  const standings = useStandings(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
-
-  const showStandings = selectedLeague && KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")];
-
   const dateTabs = [
     { key: "yesterday", label: "Yesterday" },
     { key: "today", label: "Today" },
@@ -330,24 +319,6 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Standings */}
-      {showStandings && (
-        <div className="max-w-6xl mx-auto px-4 pb-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h2 className="text-lg font-bold text-white">Standings — {selectedLeague}</h2>
-            </div>
-            <div className="bg-[#1a1d2e] rounded-xl border border-gray-800 overflow-hidden shadow-lg shadow-black/10">
-              <StandingsTable data={standings.data} loading={standings.isLoading} />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
