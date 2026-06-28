@@ -27,11 +27,7 @@ export class FFmpegWorker extends EventEmitter {
     this.startedAt = Date.now();
 
     if (!this.ffmpegPath) {
-      try {
-        this.ffmpegPath = (await import("ffmpeg-static")).default;
-      } catch {
-        this.ffmpegPath = "ffmpeg";
-      }
+      this.ffmpegPath = "ffmpeg";
     }
 
     const args = this._buildArgs();
