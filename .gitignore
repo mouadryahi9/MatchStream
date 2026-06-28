@@ -5,3 +5,6 @@ logs/
 data/
 *.mjs
 check*.js
+backend/hls_cache/
+nginx-temp.js
+check-server.js

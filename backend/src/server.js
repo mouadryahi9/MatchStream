@@ -7,8 +7,8 @@ import { WebSocketServer } from "ws";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-
 import { execSync } from "child_process";
+
 import { config } from "./config/index.js";
 import { getRedis } from "./config/redis.js";
 import { getPool } from "./config/database.js";
@@ -23,7 +23,9 @@ import adminRoutes from "./api/adminRoutes.js";
 import koooraRoutes from "./api/koooraRoutes.js";
 import iptvRoutes from "./api/iptvRoutes.js";
 
-import("./workers/ffmpegWorker.js").catch(err => logger.error("server", "Worker import failed", { error: err.message }));
+import { streamManager } from "./services/StreamManager.js";
+import { HealthMonitor } from "./utils/HealthMonitor.js";
+import { CleanupService } from "./utils/CleanupService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,15 +67,12 @@ app.get("/api/team-logo/:id", async (req, res) => {
     } else {
       res.status(404).end();
     }
-  } catch {
-    res.status(404).end();
-  } finally {
-    try { fs.unlinkSync(tmp); } catch {}
-  }
+  } catch { res.status(404).end(); }
+  finally { try { fs.unlinkSync(tmp); } catch {} }
 });
 
-const __iptvdir = path.resolve("hls_cache");
-app.use("/hls_cache", express.static(__iptvdir, {
+const hlsCacheDir = path.resolve("hls_cache");
+app.use("/hls_cache", express.static(hlsCacheDir, {
   dotfiles: "deny",
   index: false,
   setHeaders: (res, p) => {
@@ -86,20 +85,19 @@ app.use("/streams", express.static(config.streams.dir, {
   dotfiles: "deny",
   index: false,
   setHeaders: (res, path) => {
-    if (path.endsWith(".m3u8")) {
-      res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
-    } else if (path.endsWith(".ts")) {
-      res.setHeader("Content-Type", "video/mp2t");
-    }
+    if (path.endsWith(".m3u8")) res.setHeader("Content-Type", "application/vnd.apple.mpegurl");
+    else if (path.endsWith(".ts")) res.setHeader("Content-Type", "video/mp2t");
   },
 }));
 
 app.get("/api/health", (req, res) => {
+  const stats = streamManager.getStats();
   res.json({
     status: "ok",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
-    activeStreams: 0,
+    activeStreams: stats.totalChannels,
+    activeViewers: stats.totalViewers,
   });
 });
 
@@ -120,18 +118,26 @@ wss.on("connection", (ws, req) => {
       }
     } catch {}
   });
-
   ws.send(JSON.stringify({ type: "connected", timestamp: new Date().toISOString() }));
 });
 
 async function broadcast(event, data) {
   const message = JSON.stringify({ type: event, ...data });
   wss.clients.forEach((client) => {
-    if (client.readyState === 1) {
-      client.send(message);
-    }
+    if (client.readyState === 1) client.send(message);
   });
 }
+
+// Initialize services
+const healthMonitor = new HealthMonitor(streamManager, hlsCacheDir, {
+  interval: 10000,
+  staleThreshold: 30000,
+});
+
+const cleanupService = new CleanupService(streamManager, hlsCacheDir, {
+  segmentMaxAge: 120000,
+  checkInterval: 60000,
+});
 
 async function start() {
   try {
@@ -139,9 +145,19 @@ async function start() {
     getRedis();
     logger.info("server", "Database and Redis connected");
 
+    // Start health monitoring
+    healthMonitor.start();
+
+    // Start cleanup service
+    cleanupService.start();
+
+    logger.info("server", "Services initialized", {
+      healthMonitor: true,
+      cleanupService: true,
+    });
+
     const { koooraService } = await import("./services/koooraScraper.js");
     await koooraService.startCron();
-
 
     server.listen(config.port, () => {
       logger.info("server", `MatchStream API running on port ${config.port}`, {
@@ -155,21 +171,17 @@ async function start() {
   }
 }
 
-process.on("SIGTERM", async () => {
-  logger.info("server", "SIGTERM received, shutting down");
-  const { ffmpegManager } = await import("./streams-engine/ffmpegManager.js");
-  await ffmpegManager.cleanup();
+async function shutdown() {
+  logger.info("server", "Shutdown signal received");
+  healthMonitor.stop();
+  cleanupService.stop();
+  await streamManager.shutdown();
   server.close();
   process.exit(0);
-});
+}
 
-process.on("SIGINT", async () => {
-  logger.info("server", "SIGINT received, shutting down");
-  const { ffmpegManager } = await import("./streams-engine/ffmpegManager.js");
-  await ffmpegManager.cleanup();
-  server.close();
-  process.exit(0);
-});
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
 
 start();
 
