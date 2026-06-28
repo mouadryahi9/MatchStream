@@ -234,8 +234,8 @@ export default function HomePage() {
   const standings = useStandings(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
   const topScorers = useTopScorers(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
 
-  const hasLive = allLive.length > 0;
   const liveOnScreen = dateTab === "today" ? allLive.filter((m) => isAllowed(m.league)) : [];
+  const hasLive = liveOnScreen.length > 0;
 
   const dateTabs = [
     { key: "yesterday", label: "Yesterday" },
@@ -259,13 +259,13 @@ export default function HomePage() {
             >
               <span className="flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                {allLive.length} LIVE
+                {liveOnScreen.length} LIVE
               </span>
               <span className="text-gray-500 group-hover:text-gray-300 transition-colors truncate">
-                {allLive[0]?.home_team} vs {allLive[0]?.away_team}
+                {liveOnScreen[0]?.home_team} vs {liveOnScreen[0]?.away_team}
               </span>
-              {allLive.length > 1 && (
-                <span className="text-gray-600">+{allLive.length - 1} more</span>
+              {liveOnScreen.length > 1 && (
+                <span className="text-gray-600">+{liveOnScreen.length - 1} more</span>
               )}
             </Link>
           </div>
