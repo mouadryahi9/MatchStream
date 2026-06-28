@@ -17,22 +17,26 @@ function formatTime(dateStr) {
   return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
-const ALLOWED_LEAGUES = [
+const ALLOWED_PATTERNS = [
   "Premier League", "La Liga", "Champions League",
   "Europa League", "Botola", "World Cup",
+  "الدوري الإنجليزي", "الدوري الإسباني", "دوري أبطال أوروبا",
+  "الدوري الأوروبي", "الدوري المغربي", "كأس العالم",
 ];
 
 function isAllowed(league) {
-  return ALLOWED_LEAGUES.some((a) => league?.toLowerCase().includes(a.toLowerCase()));
+  if (!league) return false;
+  const lower = league.toLowerCase();
+  return ALLOWED_PATTERNS.some((a) => lower.includes(a.toLowerCase()));
 }
 
 const LEAGUE_COLORS = {
-  "La Liga": "bg-red-600",
-  "Premier League": "bg-purple-600",
-  "Botola": "bg-emerald-600",
-  "Champions League": "bg-yellow-600",
-  "Europa League": "bg-orange-600",
-  "World Cup": "bg-amber-600",
+  "La Liga": "bg-red-600", "الدوري الإسباني": "bg-red-600",
+  "Premier League": "bg-purple-600", "الدوري الإنجليزي": "bg-purple-600",
+  "Botola": "bg-emerald-600", "الدوري المغربي": "bg-emerald-600",
+  "Champions League": "bg-yellow-600", "دوري أبطال أوروبا": "bg-yellow-600",
+  "Europa League": "bg-orange-600", "الدوري الأوروبي": "bg-orange-600",
+  "World Cup": "bg-amber-600", "كأس العالم": "bg-amber-600",
 };
 
 function getLeagueColor(league) {
