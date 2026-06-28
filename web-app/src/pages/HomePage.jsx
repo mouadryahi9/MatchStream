@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import api from "../services/api/client";
 import StandingsTable from "../components/StandingsTable";
-import TopScorers from "../components/TopScorers";
-import { useStandings, useTopScorers } from "../hooks/useKooora";
+import { useStandings } from "../hooks/useKooora";
 
 function getDateStr(offset = 0) {
   const d = new Date();
@@ -244,7 +243,6 @@ export default function HomePage() {
   }, [dayMatches]);
 
   const standings = useStandings(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
-  const topScorers = useTopScorers(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
 
   const showStandings = selectedLeague && KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")];
 
@@ -332,9 +330,9 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Standings & Top Scorers */}
+      {/* Standings */}
       {showStandings && (
-        <div className="max-w-6xl mx-auto px-4 pb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="max-w-6xl mx-auto px-4 pb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
@@ -346,19 +344,6 @@ export default function HomePage() {
             </div>
             <div className="bg-[#1a1d2e] rounded-xl border border-gray-800 overflow-hidden shadow-lg shadow-black/10">
               <StandingsTable data={standings.data} loading={standings.isLoading} />
-            </div>
-          </div>
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-yellow-500 to-yellow-700 flex items-center justify-center">
-                <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                </svg>
-              </div>
-              <h2 className="text-lg font-bold text-white">Top Scorers — {selectedLeague}</h2>
-            </div>
-            <div className="bg-[#1a1d2e] rounded-xl border border-gray-800 overflow-hidden shadow-lg shadow-black/10">
-              <TopScorers data={topScorers.data} loading={topScorers.isLoading} />
             </div>
           </div>
         </div>
