@@ -2,23 +2,19 @@ import { query } from "../config/database.js";
 import { getRedis } from "../config/redis.js";
 import { generateId } from "../utils/helpers.js";
 import { logger } from "../utils/logger.js";
-import { execSync } from "child_process";
-import fs from "fs";
 
 const KOOORA_BASE = "https://www.kooora.com";
 const FOOTBALL_MATCHES = "/%D9%83%D8%B1%D8%A9-%D8%A7%D9%84%D9%82%D8%AF%D9%85/%D9%85%D8%A8%D8%A7%D8%B1%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D9%8A%D9%88%D9%85";
 
-function fetchPage(url) {
-  const tmpFile = `${process.env.TEMP || "/tmp"}\\kooora_${Date.now()}.html`;
-  try {
-    execSync(`curl.exe -s --max-time 15 "${url}" -o "${tmpFile}" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" -H "Accept: text/html"`, { timeout: 20000, shell: true, stdio: "pipe" });
-    const html = fs.readFileSync(tmpFile, "utf-8");
-    try { fs.unlinkSync(tmpFile); } catch {}
-    return html;
-  } catch (err) {
-    try { fs.unlinkSync(tmpFile); } catch {}
-    throw err;
-  }
+async function fetchPage(url) {
+  const resp = await fetch(url, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "text/html",
+    },
+    signal: AbortSignal.timeout(15000),
+  });
+  return resp.text();
 }
 
 function extractNextData(html) {
@@ -120,17 +116,11 @@ export const koooraService = {
 
       const pages = await Promise.all(
         dateUrls.map((url) =>
-          new Promise((resolve) => {
-            try { resolve(fetchPage(url)); }
-            catch { resolve(null); }
-          })
+          fetchPage(url).catch(() => null)
         )
       );
       const [footballHtml, todayHtml, tomorrowHtml] = pages;
-      const homeHtml = await new Promise((resolve) => {
-        try { resolve(fetchPage(KOOORA_BASE)); }
-        catch { resolve(null); }
-      });
+      const homeHtml = await fetchPage(KOOORA_BASE).catch(() => null);
 
       let allMatches = [];
 
