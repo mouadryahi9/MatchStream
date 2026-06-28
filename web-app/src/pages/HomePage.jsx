@@ -219,6 +219,14 @@ export default function HomePage() {
   }, [allMatches, targetDate]);
 
   const matchesByLeague = useMemo(() => {
+    const order = [
+      "World Cup", "كأس العالم",
+      "Champions League", "دوري أبطال أوروبا",
+      "Europa League", "الدوري الأوروبي",
+      "La Liga", "الدوري الإسباني", "الليغا",
+      "Premier League", "الدوري الإنجليزي",
+      "Botola", "البطولة الاحترافية", "الدوري المغربي",
+    ];
     const map = {};
     for (const m of dayMatches) {
       const l = m.league || "Other";
@@ -229,6 +237,11 @@ export default function HomePage() {
       const aLive = a[1].some((m) => m.status === "live" || m.status === "inprogress") ? 0 : 1;
       const bLive = b[1].some((m) => m.status === "live" || m.status === "inprogress") ? 0 : 1;
       if (aLive !== bLive) return aLive - bLive;
+      const ai = order.findIndex((o) => a[0].toLowerCase().includes(o.toLowerCase()));
+      const bi = order.findIndex((o) => b[0].toLowerCase().includes(o.toLowerCase()));
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
       return a[0].localeCompare(b[0]);
     });
     return sorted;
