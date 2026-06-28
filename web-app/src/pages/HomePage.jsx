@@ -161,35 +161,24 @@ export default function HomePage() {
   const [dateTab, setDateTab] = useState("today");
   const leagueScrollRef = useRef(null);
 
-  const { data: leaguesData } = useQuery({
-    queryKey: ["football-leagues"],
-    queryFn: () => api.get("/matches/football/leagues").then((r) => r.data),
-    staleTime: 60000,
-  });
-
   const leagues = [
     "World Cup", "Champions League", "Europa League",
     "La Liga", "Premier League", "Botola"
   ];
 
-  const leagueQuery = selectedLeague ? `%${selectedLeague}%` : null;
-
-  const { data: liveData } = useQuery({
-    queryKey: ["football-live", selectedLeague],
-    queryFn: () => api.get("/matches/football/live", { params: leagueQuery ? { league: leagueQuery } : {} }).then((r) => r.data),
-    refetchInterval: 15000,
-  });
+  function matchesLeague(match, pattern) {
+    if (!pattern) return true;
+    return ALLOWED_PATTERNS.some((a) =>
+      a.toLowerCase().includes(pattern.toLowerCase()) &&
+      match.league?.toLowerCase().includes(a.toLowerCase())
+    );
+  }
 
   const { data: matchesData } = useQuery({
-    queryKey: ["football-matches", selectedLeague, dateTab],
+    queryKey: ["football-matches", dateTab],
     queryFn: () => {
       const target = dateTab === "today" ? getDateStr() : dateTab === "tomorrow" ? getDateStr(1) : getDateStr(-1);
-      return api.get("/matches/football", {
-        params: {
-          ...(leagueQuery ? { league: leagueQuery } : {}),
-          limit: 200,
-        },
-      }).then((r) => r.data);
+      return api.get("/matches/football", { params: { limit: 200 } }).then((r) => r.data);
     },
   });
 
@@ -200,7 +189,6 @@ export default function HomePage() {
   });
 
   const allLive = allLiveData?.matches || [];
-  const liveMatches = liveData?.matches || [];
   const allMatches = matchesData?.matches || [];
 
   const targetDate = useMemo(() => {
@@ -212,11 +200,12 @@ export default function HomePage() {
   const dayMatches = useMemo(() => {
     return allMatches.filter((m) => {
       if (!m.start_time || !isAllowed(m.league)) return false;
+      if (!matchesLeague(m, selectedLeague)) return false;
       const md = new Date(m.start_time);
       if (isNaN(md.getTime())) return false;
       return md.toISOString().split("T")[0] === targetDate;
     });
-  }, [allMatches, targetDate]);
+  }, [allMatches, targetDate, selectedLeague]);
 
   const matchesByLeague = useMemo(() => {
     const order = [
@@ -250,7 +239,7 @@ export default function HomePage() {
   const standings = useStandings(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
   const topScorers = useTopScorers(KNOWN_COMPETITION_IDS[selectedLeague?.toLowerCase().replace(/\s+/g, "-")] || null);
 
-  const liveOnScreen = dateTab === "today" ? allLive.filter((m) => isAllowed(m.league)) : [];
+  const liveOnScreen = dateTab === "today" ? allLive.filter((m) => isAllowed(m.league) && matchesLeague(m, selectedLeague)) : [];
   const hasLive = liveOnScreen.length > 0;
 
   const dateTabs = [
