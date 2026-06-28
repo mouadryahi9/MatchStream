@@ -38,7 +38,16 @@ export default function VideoPlayer({ streamUrl, streamType = "hls", fallbackUrl
         mpegtsRef.current = player;
         player.attachMediaElement(videoRef.current);
         player.load();
-        player.on(mpegts.Events.ERROR, () => onStreamError?.());
+        let mpegtsRetries = 0;
+        player.on(mpegts.Events.ERROR, () => {
+          if (mpegtsRetries < 3) {
+            mpegtsRetries++;
+            setTimeout(() => { try { player.unload(); player.load(); } catch {} }, 2000);
+          } else {
+            onStreamError?.();
+          }
+        });
+        player.on(mpegts.Events.RECOVERED_EARLY_EOF, () => { mpegtsRetries = 0; });
         if (autoPlay) videoRef.current?.play().catch(() => {});
         return;
       }

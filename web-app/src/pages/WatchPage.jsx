@@ -14,6 +14,7 @@ export default function WatchPage() {
   const [hlsUrl, setHlsUrl] = useState(null);
   const [hlsLoading, setHlsLoading] = useState(false);
   const [retry, setRetry] = useState(0);
+  const MAX_RETRIES = 5;
 
   const isHlsUrl = (url) => url?.match(/\.m3u8/i) || url?.includes("m3u8");
 
@@ -41,7 +42,9 @@ export default function WatchPage() {
   }, [match?.stream_url, retry, isTest]);
 
   const handleStreamError = () => {
-    setTimeout(() => setRetry((r) => r + 1), 4000);
+    if (retry < MAX_RETRIES) {
+      setTimeout(() => setRetry((r) => r + 1), 4000);
+    }
   };
 
   if (isTest) {

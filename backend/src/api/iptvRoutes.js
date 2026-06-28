@@ -174,6 +174,11 @@ router.get("/stream", asyncHandler(async (req, res) => {
     "User-Agent": "VLC/3.0.21 LibVLC/3.0.21", Accept: "video/mp2t,*/*",
     "Icy-MetaData": "1", Connection: "keep-alive",
   };
+  const parsedUrl = new URL(decodedUrl);
+  if (parsedUrl.hostname.includes("ugeen.live")) {
+    headers.Origin = `${parsedUrl.protocol}//${parsedUrl.host}`;
+    headers.Referer = `${parsedUrl.protocol}//${parsedUrl.host}/`;
+  }
   if (req.headers.range) headers.Range = req.headers.range;
   followRedirect(validUrl, headers, res);
 }));
