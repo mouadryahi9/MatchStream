@@ -167,7 +167,10 @@ export default function HomePage() {
     staleTime: 60000,
   });
 
-  const leagues = (leaguesData?.leagues || []).filter(isAllowed);
+  const leagues = [
+    "World Cup", "Champions League", "Europa League",
+    "La Liga", "Premier League", "Botola"
+  ];
 
   const leagueQuery = selectedLeague ? `%${selectedLeague}%` : null;
 
