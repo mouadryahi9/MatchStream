@@ -6,8 +6,6 @@ import { FiMenu, FiX, FiLogOut, FiUser, FiChevronDown, FiTv, FiHome, FiCalendar,
 
 const navLinks = [
   { to: "/", label: "Home", icon: FiHome },
-  { to: "/matches", label: "Matches", icon: FiCalendar },
-
   { to: "/favorites", label: "Favorites", icon: FiStar },
 ];
 
