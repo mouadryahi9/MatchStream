@@ -90,9 +90,9 @@ function Navbar() {
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                       {user.role === "admin" && (
-                        <a href="http://localhost:3001" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+                        <Link to="/admin/" className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
                           Admin Panel
-                        </a>
+                        </Link>
                       )}
                       <button onClick={handleLogout} className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-gray-800 transition-colors">
                         <FiLogOut size={16} /> Sign Out

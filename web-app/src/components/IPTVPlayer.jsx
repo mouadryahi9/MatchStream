@@ -66,7 +66,7 @@ function Sidebar({ categories, selected, onSelect, search, onSearchChange }) {
 }
 
 function PlayerArea({ channel }) {
-  const proxyUrl = channel ? `http://localhost:3002/stream/${channel.url.split("/").pop()}` : null;
+  const proxyUrl = channel ? `/stream-proxy/${channel.url.split("/").pop()}` : null;
   const { videoRef, error, playing, setPlaying } = useHLS(proxyUrl);
 
   if (!channel) {

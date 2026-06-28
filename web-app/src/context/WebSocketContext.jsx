@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 
-const WS_BASE = `ws://${window.location.hostname}:4000/ws`;
+const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+const WS_BASE = `${proto}//${window.location.host}/ws`;
 
 const WebSocketContext = createContext(null);
 

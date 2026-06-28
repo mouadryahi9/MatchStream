@@ -4,10 +4,12 @@ import api from "../services/api/client";
 import { FiSave, FiLink, FiX } from "react-icons/fi";
 
 const LEAGUES = [
+  { key: "premier-league", label: "Premier League", queries: ["%Premier League%", "%الدوري الإنجليزي%"] },
+  { key: "laliga", label: "La Liga", queries: ["%La Liga%", "%الليغا%", "%الدوري الإسباني%"] },
+  { key: "ucl", label: "Champions League", queries: ["%Champions%", "%الأبطال%", "%دوري أبطال أوروبا%"] },
+  { key: "europa", label: "Europa League", queries: ["%Europa%", "%الدوري الأوروبي%"] },
+  { key: "botola", label: "Botola", queries: ["%Botola%", "%البطولة%", "%الدوري المغربي%"] },
   { key: "world-cup", label: "World Cup", queries: ["%World Cup%", "%كأس العالم%"] },
-  { key: "ucl", label: "Champions League", queries: ["%Champions%", "%الأبطال%"] },
-  { key: "laliga", label: "La Liga", queries: ["%La Liga%", "%الليغا%"] },
-  { key: "botola", label: "Botola", queries: ["%Botola%", "%البطولة%"] },
 ];
 
 export default function MatchesPage() {
