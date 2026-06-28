@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { streamService } from "../services/streamService.js";
-import { ffmpegManager } from "../streams-engine/ffmpegManager.js";
+import { streamManager } from "../services/StreamManager.js";
 import { authenticate, authorize, validate, schemas, streamLimiter } from "../middleware/index.js";
 import { asyncHandler } from "../utils/helpers.js";
 
@@ -34,8 +34,8 @@ router.get(
 router.get(
   "/active",
   asyncHandler(async (req, res) => {
-    const activeStreams = ffmpegManager.getActiveStreams();
-    res.json(activeStreams);
+    const stats = streamManager.getStats();
+    res.json(stats.channels);
   })
 );
 

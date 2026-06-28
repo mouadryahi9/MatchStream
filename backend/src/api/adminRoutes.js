@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/helpers.js";
 import { query } from "../config/database.js";
 import { getRedis } from "../config/redis.js";
 import { streamService } from "../services/streamService.js";
-import { ffmpegManager } from "../streams-engine/ffmpegManager.js";
+import { streamManager } from "../services/StreamManager.js";
 import { logger } from "../utils/logger.js";
 
 const router = Router();
@@ -42,8 +42,8 @@ router.get(
   "/streams",
   asyncHandler(async (req, res) => {
     const streams = await streamService.list({ limit: 100 });
-    const activeFfmpeg = ffmpegManager.getActiveStreams();
-    res.json({ ...streams, ffmpegProcesses: activeFfmpeg });
+    const stats = streamManager.getStats();
+    res.json({ ...streams, ffmpegProcesses: stats.channels, stats });
   })
 );
 
